@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { MdAddShoppingCart } from 'react-icons/md'
 
 import api from '../../services/api';
 import { ProductList } from './styles';
 import formatPrice from '../../util/formatPrice';
 
-function Home() {
+function Home(props) {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -23,6 +24,15 @@ function Home() {
     loadProducts()
   }, [])
 
+  const handleAddProduct = product => {
+    const { dispatch } = props;
+
+    dispatch({
+      type: 'ADD_TO_CART',
+      product,
+    })
+  }
+
   return (
     <ProductList>
       {products.map(product => (
@@ -34,11 +44,10 @@ function Home() {
           <strong>{product.title}</strong>
           <span>{product.priceFormatted}</span>
 
-          <button type="button">
+          <button type="button" onClick={() => handleAddProduct(product)}>
             <div>
               <MdAddShoppingCart size={16} color="#fff" /> 3
-          </div>
-
+            </div>
             <span>Adicionar ao Carrinho</span>
           </button>
         </li>
@@ -47,4 +56,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default connect()(Home);
