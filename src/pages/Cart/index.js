@@ -7,7 +7,7 @@ import formatPrice from '../../util/formatPrice';
 import * as CartActions from "../../store/modules/cart/actions";
 import { Container, ProductTable, Total } from "./styles";
 
-function Cart({ cart, removeFromCart, updateAmount }) {
+function Cart({ cart, total, removeFromCart, updateAmount   }) {
 
   function increment(product){
     updateAmount(product.id, product.amount + 1);
@@ -16,6 +16,7 @@ function Cart({ cart, removeFromCart, updateAmount }) {
   function decrement(product){
     updateAmount(product.id, product.amount - 1);
   }
+
 
 
   return (
@@ -32,7 +33,7 @@ function Cart({ cart, removeFromCart, updateAmount }) {
         </thead>
         <tbody>
           {cart.map((product) => (
-            <tr>
+            <tr key={product.id}>
               <td>
                 <img src={product.image} alt={product.title} />
               </td>
@@ -72,7 +73,7 @@ function Cart({ cart, removeFromCart, updateAmount }) {
 
         <Total>
           <span>TOTAL</span>
-          <strong>R$ 1920,28</strong>
+          <strong>{total}</strong>
         </Total>
       </footer>
     </Container>
@@ -82,9 +83,16 @@ function Cart({ cart, removeFromCart, updateAmount }) {
 const mapStateToProps = state => ({
   cart: state.cart.map(product => ({
     ...product,
-    subtotal: formatPrice(product.price * product.amount)
+    subtotal: formatPrice(product.price * product.amount),
   })),
+  total: formatPrice(
+    state.cart.reduce((total, product) => {
+      return total + product.price * product.amount;
+    }, 0)
+  ),
 })
+
+
 
 const mapDispatchToProps = (dispatch) => bindActionCreators(CartActions, dispatch);
 
